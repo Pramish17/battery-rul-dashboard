@@ -6,6 +6,12 @@ from data_processor import build_api_response
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/')
+def index():
+    files = os.listdir('.')
+    cwd   = os.getcwd()
+    return jsonify({'cwd': cwd, 'files': files})
+
 @app.route('/api/battery-data', methods=['GET'])
 def battery_data():
     try:
