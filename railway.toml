@@ -1,5 +1,6 @@
 [build]
 builder = "nixpacks"
+buildCommand = "cd backend && pip install -r requirements.txt"
 
 [deploy]
-startCommand = "cd backend && gunicorn app:app"ßßß
+startCommand = "cd backend && gunicorn app:app"
