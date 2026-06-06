@@ -6,7 +6,7 @@ function CellCard({ cell }) {
   };
 
   const s     = statusColors[cell.status];
-  const pct   = Math.min(100, ((cell.endCap - 12.8) / (16.0 - 12.8)) * 100);
+  const pct   = Math.min(100, ((cell.endCap - cell.eolCapCell) / (cell.startCap - cell.eolCapCell)) * 100);
   const ruled = cell.rulMonths > 500 ? '> 500 months' : `${cell.rulMonths} months`;
 
   return (
@@ -55,7 +55,7 @@ function CellCard({ cell }) {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
         <div>
-          <div style={{ color: '#9ca3af' }}>Strategy</div>
+          <div style={{ color: '#9ca3af' }}>Model</div>
           <div style={{ fontWeight: 600, color: '#374151' }}>{cell.strategy}</div>
         </div>
         <div>

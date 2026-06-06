@@ -21,7 +21,7 @@ function RULChart({ cells }) {
         Estimated RUL — months to end of life
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        Based on linear extrapolation of capacity fade rate · EOL = 80% of nominal
+        Based on linear extrapolation of capacity fade rate · EOL = 80% of each cell's initial capacity
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <BarChart

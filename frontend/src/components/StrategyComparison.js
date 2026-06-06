@@ -1,9 +1,9 @@
 const STRATEGIES = ['BMP', 'BMR', 'SPM'];
 const STRATEGY_COLORS = { BMP: '#378ADD', BMR: '#E24B4A', SPM: '#1D9E75' };
 const STRATEGY_NAMES  = {
-  BMP: 'Balanced Multi-Phase',
-  BMR: 'Boost-and-Rest',
-  SPM: 'Standard Protocol Mode',
+  BMP: 'Profit-Maximising Bucket Model',
+  BMR: 'Revenue-Maximising Bucket Model',
+  SPM: 'Single Particle Model',
 };
 
 function groupCells(cells) {
@@ -41,10 +41,10 @@ function StrategyComparison({ cells }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
       <div style={{ fontWeight: 600, fontSize: 15, color: '#111827', marginBottom: 4 }}>
-        Charging Strategy Comparison
+        Control/Optimisation Model Comparison
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        BMP = Balanced Multi-Phase · BMR = Boost-and-Rest · SPM = Standard Protocol Mode — averaged over 2 cells per strategy
+        BMP = Profit-Maximising Bucket Model · BMR = Revenue-Maximising Bucket Model · SPM = Single Particle Model — averaged over 2 cells per model
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 16 }}>

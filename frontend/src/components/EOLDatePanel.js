@@ -13,22 +13,21 @@ function EOLDatePanel({ cells }) {
   const sorted = [...cells].sort((a, b) => a.rulMonths - b.rulMonths);
 
   const chartData = sorted.map(c => ({
-    name:     c.label,
-    rul:      Math.min(c.rulMonths, 300),
-    rulRaw:   c.rulMonths,
-    eolDate:  c.eolDate,
-    color:    c.color,
-    status:   c.status,
-    sohEnd:   c.sohEnd,
+    name:   c.label,
+    rul:    Math.min(c.rulMonths, 300),
+    rulRaw: c.rulMonths,
+    color:  c.color,
+    status: c.status,
+    sohEnd: c.sohEnd,
   }));
 
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
       <div style={{ fontWeight: 600, fontSize: 15, color: '#111827', marginBottom: 4 }}>
-        Predicted End-of-Life Dates
+        Estimated Remaining Useful Life
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        Linear extrapolation from current fade rate · EOL = 12.8 Ah (80% of 16 Ah nominal) · Experiment start Jan 2014
+        Linear extrapolation from observed fade rate · EOL = 80% of each cell's initial capacity · Months remaining from end of observed data
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
@@ -51,7 +50,7 @@ function EOLDatePanel({ cells }) {
             <Tooltip
               formatter={(_, __, props) => {
                 const d = props.payload;
-                const label = d.rulRaw > 300 ? `>300 months (${d.eolDate})` : `${d.rulRaw} months (${d.eolDate})`;
+                const label = d.rulRaw > 300 ? '>300 months remaining' : `${d.rulRaw} months remaining`;
                 return [label, 'Est. RUL'];
               }}
             />
@@ -83,8 +82,8 @@ function EOLDatePanel({ cells }) {
                   <div style={{ fontSize: 11, color: '#6b7280' }}>SOH {c.sohEnd}%</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 700, fontSize: 13, color: uc }}>{c.eolDate}</div>
-                  <div style={{ fontSize: 10, color: '#9ca3af' }}>{rulLabel}</div>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: uc }}>{rulLabel}</div>
+                  <div style={{ fontSize: 10, color: '#9ca3af' }}>months remaining</div>
                 </div>
               </div>
             );

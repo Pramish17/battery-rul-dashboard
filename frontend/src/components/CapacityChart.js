@@ -80,7 +80,7 @@ function CapacityChart({ series, eolCap }) {
             y={eolCap}
             stroke="#6b7280"
             strokeDasharray="6 3"
-            label={{ value:'EOL (12.8 Ah)', position:'insideTopRight', fontSize:11, fill:'#6b7280' }}
+            label={{ value:`EOL (${eolCap} Ah ≈ 80%)`, position:'insideTopRight', fontSize:11, fill:'#6b7280' }}
           />
           {/* Observed lines */}
           {series.map(s => (

@@ -106,6 +106,12 @@ function BenchmarkPanel({ cells, benchmark }) {
         </div>
       </div>
 
+      {/* Dataset citation */}
+      <div style={{ fontSize: 10, color: '#9ca3af', marginBottom: 16, fontStyle: 'italic' }}>
+        Oxford Energy Trading Battery Degradation Dataset — Reniers, Mulder &amp; Howey, University of Oxford / EnergyVille, 2020.{' '}
+        DOI: 10.5287/bodleian:gJPdDzvP4
+      </div>
+
       {/* Summary table */}
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>

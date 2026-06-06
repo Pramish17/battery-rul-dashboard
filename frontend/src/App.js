@@ -147,7 +147,7 @@ function DegradationModule({ cells }) {
     <div>
       <SectionTitle
         title="Degradation Drivers"
-        subtitle="Attributed capacity fade by stress factor and charging strategy performance comparison"
+        subtitle="Attributed capacity fade by stress factor and control/optimisation model performance comparison"
       />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <DegradationDrivers cells={cells} />
@@ -213,7 +213,7 @@ function App() {
           </div>
         </div>
         <div style={{ color: '#93c5fd', fontSize: 12, textAlign: 'right' }}>
-          EOL threshold: 80% capacity (12.8 Ah)<br />
+          EOL threshold: 80% of initial capacity per cell<br />
           <span style={{ color: '#6ee7b7' }}>● Live</span>
         </div>
       </div>
@@ -228,6 +228,12 @@ function App() {
         {activeTab === 'stress'      && <StressModule     cells={cells} />}
         {activeTab === 'degradation' && <DegradationModule cells={cells} />}
         {activeTab === 'benchmark'   && <BenchmarkModule  cells={cells} benchmark={benchmark} />}
+      </div>
+
+      {/* Dataset citation */}
+      <div style={{ padding: '10px 32px', borderTop: '1px solid #e5e7eb', fontSize: 11, color: '#9ca3af', textAlign: 'center' }}>
+        Oxford Energy Trading Battery Degradation Dataset — Reniers, Mulder &amp; Howey, University of Oxford / EnergyVille, 2020.{' '}
+        <span style={{ fontFamily: 'monospace' }}>DOI: 10.5287/bodleian:gJPdDzvP4</span>
       </div>
     </div>
   );

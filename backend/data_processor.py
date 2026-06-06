@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from scipy import stats
-from datetime import datetime, timedelta
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -15,8 +14,8 @@ CELLS = {
     'SPM_cell2': {'strategy': 'SPM', 'label': 'SPM Cell 2', 'color': '#5DCAA5'},
 }
 
-NOMINAL_CAP = 16.0
-EOL_CAP     = 12.8
+NOMINAL_CAP  = 16.0   # nominal cell capacity, used for C-rate normalisation only
+EOL_SOH_PCT  = 0.80   # EOL = 80% of each cell's own initial capacity
 
 # Stress thresholds
 THRESHOLDS = {
@@ -27,15 +26,14 @@ THRESHOLDS = {
     'current_min':      -32.0,
 }
 
-EXPERIMENT_START = datetime(2014, 1, 1)
-
 def load_capacity_data():
     data = {}
     for cell_id, info in CELLS.items():
         path = os.path.join(BASE_DIR, f'{cell_id}_capacityData.csv')
         df   = pd.read_csv(path)
         df['time_months'] = df['time_s'] / 86400 / 30.44
-        df['soh']         = (df['capacity_Ah'] / NOMINAL_CAP) * 100
+        initial_cap       = df['capacity_Ah'].iloc[0]
+        df['soh']         = (df['capacity_Ah'] / initial_cap) * 100
         df['cell_id']     = cell_id
         df['strategy']    = info['strategy']
         df['color']       = info['color']
@@ -63,16 +61,15 @@ def compute_metrics(df):
 
     fade_pct       = ((start_cap - end_cap) / start_cap) * 100
     fade_per_month = abs(slope)
-    soh_end        = (end_cap / NOMINAL_CAP) * 100
+    soh_end        = (end_cap / start_cap) * 100
+
+    # Per-cell EOL capacity: 80% of this cell's own first reading
+    eol_cap_cell = start_cap * EOL_SOH_PCT
 
     if slope < 0:
-        months_to_eol = (end_cap - EOL_CAP) / fade_per_month
+        months_to_eol = (end_cap - eol_cap_cell) / fade_per_month
     else:
         months_to_eol = 9999
-
-    # Calculate end of life date
-    eol_date = EXPERIMENT_START + timedelta(days=months_to_eol * 30.44)
-    eol_date_str = eol_date.strftime('%b %Y') if months_to_eol < 9999 else 'Beyond 2040'
 
     if soh_end < 93:
         status = 'Critical'
@@ -84,11 +81,11 @@ def compute_metrics(df):
     return {
         'startCap':      round(start_cap, 3),
         'endCap':        round(end_cap, 3),
+        'eolCapCell':    round(eol_cap_cell, 3),
         'sohEnd':        round(soh_end, 1),
         'fadePct':       round(fade_pct, 2),
         'fadePerMonth':  round(fade_per_month, 4),
         'rulMonths':     round(months_to_eol, 1),
-        'eolDate':       eol_date_str,
         'r2':            round(r**2, 4),
         'slope':         round(slope, 6),
         'intercept':     round(intercept, 4),
@@ -101,25 +98,29 @@ def compute_stress_alerts(cell_id):
         alerts  = []
         summary = {}
 
-        # Overvoltage
-        ov_count = int((df['voltage_V'] > THRESHOLDS['voltage_max']).sum())
-        if ov_count > 0:
-            alerts.append({
-                'type': 'Overvoltage',
-                'severity': 'High',
-                'count': ov_count,
-                'message': f'Voltage exceeded {THRESHOLDS["voltage_max"]}V in {ov_count} readings'
-            })
+        # voltage == 0 means "no measurement available" per dataset readme — exclude from all voltage analysis
+        df_v = df[df['voltage_V'] != 0]
 
-        # Undervoltage
-        uv_count = int((df['voltage_V'] < THRESHOLDS['voltage_min']).sum())
-        if uv_count > 0:
-            alerts.append({
-                'type': 'Undervoltage',
-                'severity': 'High',
-                'count': uv_count,
-                'message': f'Voltage dropped below {THRESHOLDS["voltage_min"]}V in {uv_count} readings'
-            })
+        # Overvoltage
+        if len(df_v) > 0:
+            ov_count = int((df_v['voltage_V'] > THRESHOLDS['voltage_max']).sum())
+            if ov_count > 0:
+                alerts.append({
+                    'type': 'Overvoltage',
+                    'severity': 'High',
+                    'count': ov_count,
+                    'message': f'Voltage exceeded {THRESHOLDS["voltage_max"]}V in {ov_count} readings'
+                })
+
+            # Undervoltage
+            uv_count = int((df_v['voltage_V'] < THRESHOLDS['voltage_min']).sum())
+            if uv_count > 0:
+                alerts.append({
+                    'type': 'Undervoltage',
+                    'severity': 'High',
+                    'count': uv_count,
+                    'message': f'Voltage dropped below {THRESHOLDS["voltage_min"]}V in {uv_count} readings'
+                })
 
         # Overtemperature
         temp_valid = df[df['cell_temp_C'] > 0]['cell_temp_C']
@@ -148,10 +149,11 @@ def compute_stress_alerts(cell_id):
             })
 
         summary['alertCount'] = len(alerts)
-        summary['maxVoltage'] = round(float(df['voltage_V'].max()), 3)
-        summary['minVoltage'] = round(float(df['voltage_V'].min()), 3)
+        if len(df_v) > 0:
+            summary['maxVoltage'] = round(float(df_v['voltage_V'].max()), 3)
+            summary['minVoltage'] = round(float(df_v['voltage_V'].min()), 3)
+            summary['avgVoltage'] = round(float(df_v['voltage_V'].mean()), 3)
         summary['maxCurrent'] = round(float(df['current_A'].abs().max()), 2)
-        summary['avgVoltage'] = round(float(df['voltage_V'].mean()), 3)
 
         return {'alerts': alerts, 'summary': summary}
 
@@ -165,9 +167,10 @@ def compute_degradation_drivers(cell_id, cap_df):
         # C-rate (current normalised by capacity)
         profile_df['c_rate'] = profile_df['current_A'].abs() / NOMINAL_CAP
 
-        # Depth of discharge — estimate from voltage range
-        v_range   = profile_df['voltage_V'].max() - profile_df['voltage_V'].min()
-        avg_dod   = round(float(v_range / (4.2 - 2.7) * 100), 1)
+        # Depth of discharge — estimate from valid voltage range (0 means no measurement)
+        v_valid = profile_df[profile_df['voltage_V'] != 0]['voltage_V']
+        v_range = float(v_valid.max() - v_valid.min()) if len(v_valid) > 1 else 0.0
+        avg_dod = round(v_range / (4.2 - 2.7) * 100, 1)
 
         # Temperature stats
         temp_valid = profile_df[profile_df['cell_temp_C'] > 0]['cell_temp_C']
@@ -224,12 +227,12 @@ def compute_oxford_benchmark(all_metrics):
         'description':      'Oxford lab baseline — average across all 6 Kokam 16Ah cells'
     }
 
-def get_projection(df, slope, intercept):
+def get_projection(df, slope, intercept, eol_cap_cell):
     x     = df['time_months'].values
     x_end = x[-1]
 
     if slope < 0:
-        t_eol = min((EOL_CAP - intercept) / slope, 30)
+        t_eol = min((eol_cap_cell - intercept) / slope, 30)
     else:
         t_eol = 30
 
@@ -254,7 +257,7 @@ def build_api_response():
 
         stress  = compute_stress_alerts(cell_id)
         drivers = compute_degradation_drivers(cell_id, metrics)
-        proj    = get_projection(df, metrics['slope'], metrics['intercept'])
+        proj    = get_projection(df, metrics['slope'], metrics['intercept'], metrics['eolCapCell'])
 
         actual_points = [
             {'month':    round(float(r['time_months']), 2),
@@ -287,10 +290,13 @@ def build_api_response():
     cells.sort(key=lambda c: c['sohEnd'])
     benchmark = compute_oxford_benchmark(all_metrics)
 
+    # Representative EOL capacity for chart reference line (average across all cells)
+    avg_eol_cap = round(sum(m['eolCapCell'] for m in all_metrics) / len(all_metrics), 3)
+
     return {
         'cells':       cells,
         'chartSeries': chart_series,
-        'eolCap':      EOL_CAP,
+        'eolCap':      avg_eol_cap,
         'nominalCap':  NOMINAL_CAP,
         'benchmark':   benchmark,
         'summary': {

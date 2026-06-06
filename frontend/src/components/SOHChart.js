@@ -35,7 +35,7 @@ function SOHChart({ series }) {
             tick={{ fontSize: 11, fill: '#9ca3af' }}
           />
           <YAxis
-            domain={[85, 115]}
+            domain={[78, 102]}
             tickFormatter={v => `${v}%`}
             tick={{ fontSize: 11, fill: '#9ca3af' }}
             width={45}
