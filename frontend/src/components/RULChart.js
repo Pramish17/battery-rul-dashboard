@@ -10,7 +10,7 @@ function RULChart({ cells }) {
     .map(c => ({
       name:     c.label,
       rul:      Math.min(c.rulMonths, CAP),
-      rulLabel: c.rulMonths >= CAP ? `>${CAP} months` : `${c.rulMonths} months`,
+      rulLabel: c.rulMonths >= 9999 ? 'No EOL within horizon' : c.rulMonths >= CAP ? `>${CAP} months total life` : `${c.rulMonths.toFixed(1)} months total life`,
       color:    c.color,
     }));
 

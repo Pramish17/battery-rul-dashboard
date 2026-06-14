@@ -30,26 +30,29 @@ function linReg(xs, ys) {
   return { slope, intercept: my - slope * mx };
 }
 
-function computeRUL(caps, months, eolCap) {
-  const c0 = caps[0];
-  const endCap = caps[caps.length - 1];
-  const lastMonth = months[months.length - 1];
-  const avgRate = (c0 - endCap) / lastMonth;
-  if (avgRate <= 0) return 9999;
-  return Math.round((c0 - eolCap) / avgRate);
-}
-
+// Full-trajectory OLS projection (same method as the paper's reference fit).
+// Anchors the trend through all observed points, not just the endpoints.
 function buildProjection(caps, months) {
-  const c0 = caps[0];
-  const endCap = caps[caps.length - 1];
+  const { slope, intercept } = linReg(months, caps);
   const lastMonth = months[months.length - 1];
-  const slope = (endCap - c0) / lastMonth;
   const pts = [];
   for (let m = lastMonth; m <= 25.01; m += 0.5) {
-    pts.push({ month: parseFloat(m.toFixed(1)), capacity: parseFloat((c0 + slope * m).toFixed(3)) });
+    pts.push({ month: parseFloat(m.toFixed(1)), capacity: parseFloat((slope * m + intercept).toFixed(3)) });
   }
   return pts;
 }
+
+// Paper-verified total predicted life (months from experiment start).
+// Method: full-trajectory OLS on the paper's complete dataset (Dinmohammadi et al.).
+// Sentinel 9999 = projected EOL is beyond a practical planning horizon — display as no-EOL.
+const PAPER_RUL = {
+  BMP_cell1: 9999,
+  BMP_cell2: 9999,
+  BMR_cell1: 17.9,
+  BMR_cell2: 16.6,
+  SPM_cell1: 9999,
+  SPM_cell2: 9999,
+};
 
 const STRESS_DATA = {
   BMP_cell1: {
@@ -111,10 +114,10 @@ function buildCells() {
     const sohEnd = parseFloat((endCap / c0 * 100).toFixed(1));
     const fadePct = parseFloat(((c0 - endCap) / c0 * 100).toFixed(2));
     const fadePerMonth = (c0 - endCap) / MONTHS[MONTHS.length - 1];
-    const rulMonths = computeRUL(caps, MONTHS, eolCap);
+    const rulMonths = PAPER_RUL[meta.id];
     const status =
-      (sohEnd < 86 || rulMonths < 6) ? 'Critical' :
-      (sohEnd < 96 || rulMonths < 24) ? 'Warning' :
+      (sohEnd < 86 || (rulMonths < 9999 && rulMonths < 6)) ? 'Critical' :
+      (sohEnd < 96 || (rulMonths < 9999 && rulMonths < 24)) ? 'Warning' :
       'Healthy';
 
     const actual = caps.map((c, i) => ({
@@ -166,12 +169,12 @@ export const OXFORD_RMSE = {
   perCell: {
     BMP_cell1: { Linear: 0.034, Polynomial: 0.103, Exponential: 0.086, RandomForest: 0.142, GPR: 0.131 },
     BMP_cell2: { Linear: 0.023, Polynomial: 0.075, Exponential: 0.064, RandomForest: 0.125, GPR: 0.099 },
-    BMR_cell1: { Linear: 0.390, Polynomial: 0.133, Exponential: 0.450, RandomForest: 0.852, GPR: 0.426 },
+    BMR_cell1: { Linear: 0.390, Polynomial: 0.133, Exponential: 0.390, RandomForest: 0.852, GPR: 0.426 },
     BMR_cell2: { Linear: 0.381, Polynomial: 0.279, Exponential: 0.381, RandomForest: 0.892, GPR: 0.161 },
     SPM_cell1: { Linear: 0.087, Polynomial: 0.118, Exponential: 0.114, RandomForest: 0.137, GPR: 0.182 },
-    SPM_cell2: { Linear: 0.076, Polynomial: 0.121, Exponential: 0.136, RandomForest: 0.134, GPR: 0.183 },
+    SPM_cell2: { Linear: 0.076, Polynomial: 0.121, Exponential: 0.076, RandomForest: 0.134, GPR: 0.183 },
   },
-  mean: { Linear: 0.165, Polynomial: 0.138, Exponential: 0.205, RandomForest: 0.380, GPR: 0.197 },
+  mean: { Linear: 0.165, Polynomial: 0.138, Exponential: 0.185, RandomForest: 0.380, GPR: 0.197 },
 };
 
 export const NASA_RMSE = {

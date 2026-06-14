@@ -54,7 +54,7 @@ function StrategyComparison({ cells }) {
         {STRATEGIES.filter(s => grouped[s]).map(s => {
           const g      = grouped[s];
           const color  = STRATEGY_COLORS[s];
-          const rulLbl = g.avgRUL > 300 ? '>300 mo' : `${g.avgRUL.toFixed(1)} mo`;
+          const rulLbl = g.avgRUL >= 9999 ? 'No EOL within horizon' : g.avgRUL > 300 ? '>300 mo' : `${g.avgRUL.toFixed(1)} mo`;
           return (
             <div key={s} style={{
               border:     `2px solid ${color}33`,

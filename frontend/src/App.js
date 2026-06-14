@@ -156,7 +156,7 @@ function OverviewModule() {
         <MetricCard
           label="Fastest degrading"
           value={fastestCell.label}
-          sub={`${fastestCell.fadePct}% fade · ${fastestCell.rulMonths} months RUL`}
+          sub={`${fastestCell.fadePct}% fade · ${fastestCell.rulMonths.toFixed(1)} months total predicted life`}
           color="#dc2626"
         />
         <MetricCard
@@ -178,7 +178,7 @@ function OverviewModule() {
           <li>
             <strong>No single prediction model wins on both datasets.</strong> Polynomial regression is best
             on Oxford (RMSE 0.138 Ah) but ranks 4th on NASA (0.100 Ah). Exponential is best on NASA
-            (0.047 Ah) but 4th on Oxford (0.205 Ah). The right model depends on battery usage patterns.
+            (0.047 Ah) but 3rd on Oxford (0.185 Ah). The right model depends on battery usage patterns.
           </li>
           <li>
             <strong>Random Forest cannot see the future.</strong> It matches patterns in training data but
@@ -546,7 +546,7 @@ function WhatThisMeansCard() {
       <p style={{ fontSize: 13, color: '#166534', lineHeight: 1.7, margin: 0 }}>
         Polynomial regression wins on the Oxford energy-trading dataset (monthly checkpoints, variable
         cycling patterns) but ranks <strong>fourth</strong> on the NASA dataset (per-cycle lab data, more
-        uniform conditions). Exponential decay wins on NASA but ranks <strong>fourth</strong> on Oxford.
+        uniform conditions). Exponential decay wins on NASA but ranks <strong>third</strong> on Oxford.
         This means there is no single best degradation model — the right choice depends on the battery's
         usage pattern and measurement frequency. A model should be selected or validated against data
         from the specific application it will be deployed in.

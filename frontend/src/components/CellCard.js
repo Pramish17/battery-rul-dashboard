@@ -7,7 +7,7 @@ function CellCard({ cell }) {
 
   const s     = statusColors[cell.status];
   const pct   = Math.min(100, ((cell.endCap - cell.eolCapCell) / (cell.startCap - cell.eolCapCell)) * 100);
-  const ruled = cell.rulMonths > 500 ? '> 500 months' : `${cell.rulMonths} months`;
+  const ruled = cell.rulMonths >= 9999 ? 'No EOL within horizon' : `${cell.rulMonths.toFixed(1)} months`;
 
   return (
     <div style={{
@@ -59,7 +59,7 @@ function CellCard({ cell }) {
           <div style={{ fontWeight: 600, color: '#374151' }}>{cell.strategy}</div>
         </div>
         <div>
-          <div style={{ color: '#9ca3af' }}>Est. RUL</div>
+          <div style={{ color: '#9ca3af' }}>Total predicted life</div>
           <div style={{ fontWeight: 600, color: '#374151' }}>{ruled}</div>
         </div>
         <div>

@@ -17,6 +17,7 @@ function EOLDatePanel({ cells }) {
     name:   c.label,
     rul:    Math.min(c.rulMonths, CAP),
     rulRaw: c.rulMonths,
+    noEOL: c.rulMonths >= 9999,
     color:  c.color,
     status: c.status,
     sohEnd: c.sohEnd,
@@ -51,8 +52,8 @@ function EOLDatePanel({ cells }) {
             <Tooltip
               formatter={(_, __, props) => {
                 const d = props.payload;
-                const label = d.rulRaw >= CAP ? `>${CAP} months total life` : `${d.rulRaw} months total life`;
-                return [label, 'Est. RUL'];
+                const label = d.noEOL ? 'No EOL within horizon' : d.rulRaw >= CAP ? `>${CAP} months total life` : `${d.rulRaw.toFixed(1)} months total life`;
+                return [label, 'Total predicted life'];
               }}
             />
             <Bar dataKey="rul" radius={[0, 6, 6, 0]}>
@@ -68,7 +69,7 @@ function EOLDatePanel({ cells }) {
             const uc          = urgencyColor(c.rulMonths);
             const borderColor = c.rulMonths < 12 ? '#fca5a5' : c.rulMonths < 36 ? '#fcd34d' : '#e5e7eb';
             const bg          = c.rulMonths < 12 ? '#fef2f2' : c.rulMonths < 36 ? '#fffbeb' : '#f9fafb';
-            const rulLabel    = c.rulMonths >= CAP ? `>${CAP} months` : `${c.rulMonths} months`;
+            const rulLabel    = c.rulMonths >= 9999 ? 'No EOL within horizon' : c.rulMonths >= CAP ? `>${CAP} months total life` : `${c.rulMonths.toFixed(1)} months total life`;
             return (
               <div key={c.id} style={{
                 display: 'flex', alignItems: 'center', gap: 10,
