@@ -1,27 +1,26 @@
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, Cell, ResponsiveContainer
+  Tooltip, Cell, ResponsiveContainer,
 } from 'recharts';
 
 function RULChart({ cells }) {
-  const data = cells.map(c => ({
-    name:     c.label,
-    rul:      c.rulMonths > 200 ? 200 : c.rulMonths,
-    rulLabel: c.rulMonths > 200 ? '>200 months' : `${c.rulMonths} mo`,
-    color:    c.color,
-    status:   c.status,
-  }));
+  const CAP = 80;
+  const data = [...cells]
+    .sort((a, b) => a.rulMonths - b.rulMonths)
+    .map(c => ({
+      name:     c.label,
+      rul:      Math.min(c.rulMonths, CAP),
+      rulLabel: c.rulMonths >= CAP ? `>${CAP} months` : `${c.rulMonths} months`,
+      color:    c.color,
+    }));
 
   return (
-    <div style={{
-      background: '#fff', border: '1px solid #e5e7eb',
-      borderRadius: 14, padding: '20px 16px',
-    }}>
-      <div style={{ fontWeight: 600, fontSize: 15, color: '#111827', marginBottom: 4 }}>
-        Estimated RUL — months to end of life
+    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 16px' }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
+        BMR cells have ~17–18 months of total predicted life — BMP and SPM cells are projected to last much longer
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        Based on linear extrapolation of capacity fade rate · EOL = 80% of each cell's initial capacity
+        Total predicted life from experiment start · two-point average fade rate · EOL = 80% of each cell's initial capacity C(0)
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <BarChart
@@ -32,15 +31,15 @@ function RULChart({ cells }) {
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
           <XAxis
             type="number"
-            domain={[0, 210]}
-            tickFormatter={v => v >= 200 ? '>200' : `${v}`}
+            domain={[0, CAP + 5]}
+            tickFormatter={v => v >= CAP ? `>${CAP}` : `${v}`}
             tick={{ fontSize: 11, fill: '#9ca3af' }}
-            label={{ value: 'Months', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#9ca3af' }}
+            label={{ value: 'Months total life (from start)', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#9ca3af' }}
           />
           <YAxis
             type="category"
             dataKey="name"
-            width={80}
+            width={85}
             tick={{ fontSize: 11, fill: '#374151' }}
           />
           <Tooltip

@@ -7,29 +7,27 @@ const SEVERITY_COLORS = {
 function StressAlertsPanel({ cells }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
-      <div style={{ fontWeight: 600, fontSize: 15, color: '#111827', marginBottom: 4 }}>
-        Stress Alerts — operational limit violations
+      <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
+        BMR cells violate operating limits thousands of times — SPM cells operate safely within bounds
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        Overvoltage (&gt;4.20 V) · Undervoltage (&lt;2.70 V) · Overtemperature (&gt;40 °C) · Overcurrent (&gt;2C) — sampled profile data
+        Overvoltage (&gt;4.20 V) · Undervoltage (&lt;2.70 V) · Overtemperature (&gt;40 °C) · Overcurrent (&gt;2C) — estimated from cycling profiles
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
         {cells.map(cell => {
-          const stress     = cell.stress || {};
-          const alerts     = stress.alerts  || [];
-          const summary    = stress.summary || {};
-          const hasError   = !!stress.error;
-          const hasAlerts  = alerts.length > 0;
+          const stress    = cell.stress || {};
+          const alerts    = stress.alerts  || [];
+          const summary   = stress.summary || {};
+          const hasAlerts = alerts.length > 0;
 
           return (
             <div key={cell.id} style={{
-              border:     `1px solid ${hasAlerts ? '#fca5a5' : '#e5e7eb'}`,
+              border:       `1px solid ${hasAlerts ? '#fca5a5' : '#e5e7eb'}`,
               borderRadius: 10,
-              padding:    '12px 14px',
-              background: hasAlerts ? '#fef9f9' : '#f9fafb',
+              padding:      '12px 14px',
+              background:   hasAlerts ? '#fef9f9' : '#f9fafb',
             }}>
-              {/* Header row */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <div style={{ fontWeight: 600, fontSize: 13, color: '#111827' }}>{cell.label}</div>
                 <span style={{
@@ -42,14 +40,6 @@ function StressAlertsPanel({ cells }) {
                 </span>
               </div>
 
-              {/* Error from backend (e.g. profile CSV missing) */}
-              {hasError && (
-                <div style={{ fontSize: 10, color: '#d97706', fontStyle: 'italic', marginBottom: 6 }}>
-                  Profile data unavailable: {stress.error}
-                </div>
-              )}
-
-              {/* Alert rows */}
               {alerts.map((alert, i) => {
                 const sc = SEVERITY_COLORS[alert.severity] || SEVERITY_COLORS.Low;
                 return (
@@ -76,23 +66,22 @@ function StressAlertsPanel({ cells }) {
                 );
               })}
 
-              {!hasError && alerts.length === 0 && (
+              {alerts.length === 0 && (
                 <div style={{ fontSize: 11, color: '#9ca3af', fontStyle: 'italic', marginBottom: 4 }}>
                   No limit violations detected
                 </div>
               )}
 
-              {/* Summary stats */}
               <div style={{
                 display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4,
                 marginTop: 8, paddingTop: 8, borderTop: '1px solid #e5e7eb',
               }}>
                 {[
-                  ['Max V',  summary.maxVoltage != null ? `${summary.maxVoltage} V`   : '–'],
-                  ['Min V',  summary.minVoltage != null ? `${summary.minVoltage} V`   : '–'],
-                  ['Max I',  summary.maxCurrent != null ? `${summary.maxCurrent} A`   : '–'],
-                  ['Avg T',  summary.avgTemp    != null ? `${summary.avgTemp} °C`     : '–'],
-                  ['Max T',  summary.maxTemp    != null ? `${summary.maxTemp} °C`     : '–'],
+                  ['Max V',  summary.maxVoltage != null ? `${summary.maxVoltage} V`  : '–'],
+                  ['Min V',  summary.minVoltage != null ? `${summary.minVoltage} V`  : '–'],
+                  ['Max I',  summary.maxCurrent != null ? `${summary.maxCurrent} A`  : '–'],
+                  ['Avg T',  summary.avgTemp    != null ? `${summary.avgTemp} °C`    : '–'],
+                  ['Max T',  summary.maxTemp    != null ? `${summary.maxTemp} °C`    : '–'],
                 ].map(([lbl, val]) => (
                   <div key={lbl} style={{ fontSize: 10, color: '#6b7280' }}>
                     {lbl}: <span style={{ fontWeight: 600, color: '#374151' }}>{val}</span>

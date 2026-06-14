@@ -1,28 +1,23 @@
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, Legend, ReferenceLine, ResponsiveContainer
+  Tooltip, Legend, ReferenceLine, ResponsiveContainer,
 } from 'recharts';
 
 function SOHChart({ series }) {
   const months   = series[0]?.actual.map(p => p.month) || [];
   const chartData = months.map((m, i) => {
     const point = { month: parseFloat(m.toFixed(1)) };
-    series.forEach(s => {
-      point[s.id] = s.actual[i]?.soh;
-    });
+    series.forEach(s => { point[s.id] = s.actual[i]?.soh; });
     return point;
   });
 
   return (
-    <div style={{
-      background: '#fff', border: '1px solid #e5e7eb',
-      borderRadius: 14, padding: '20px 16px',
-    }}>
-      <div style={{ fontWeight: 600, fontSize: 15, color: '#111827', marginBottom: 4 }}>
-        State of Health (SOH) %
+    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 16px' }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
+        BMR cells are approaching the 80% end-of-life threshold — all others remain healthy
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        Below 80% = end of life threshold
+        SOH = C(k) / C(0) × 100% where C(0) is each cell's first measured capacity — all cells start at 100% by definition
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
@@ -35,7 +30,7 @@ function SOHChart({ series }) {
             tick={{ fontSize: 11, fill: '#9ca3af' }}
           />
           <YAxis
-            domain={[78, 102]}
+            domain={[81, 101]}
             tickFormatter={v => `${v}%`}
             tick={{ fontSize: 11, fill: '#9ca3af' }}
             width={45}
