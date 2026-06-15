@@ -8,10 +8,10 @@ function StressAlertsPanel({ cells }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
       <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
-        BMR cells violate operating limits thousands of times — SPM cells operate safely within bounds
+        BMR cells exceed voltage limits tens of thousands of times — BMP cells never do, SPM only occasionally
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        Overvoltage (&gt;4.20 V) · Undervoltage (&lt;2.70 V) · Overtemperature (&gt;40 °C) · Overcurrent (&gt;2C) — estimated from cycling profiles
+        Overvoltage (&gt;4.20 V) · Undervoltage (&lt;2.70 V) · Overtemperature (&gt;40 °C) — counted from per-cycle voltage/temperature profiles in the Oxford dataset
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>

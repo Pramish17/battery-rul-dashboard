@@ -1,5 +1,6 @@
 // src/data.js — hardcoded verified research data and computed values
 import nasaFullData from './data/nasa_capacity_full.json';
+import stressRaw    from './data/stress_violations_real.json';
 
 export const MONTHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12.3];
 
@@ -55,47 +56,51 @@ const PAPER_RUL = {
   SPM_cell2: 9999,
 };
 
-const STRESS_DATA = {
-  BMP_cell1: {
-    alerts: [
-      { type: 'Undervoltage', severity: 'Low', count: 156, message: 'Voltage dipped below 2.70 V in 156 readings' },
-    ],
-    summary: { maxVoltage: 4.16, minVoltage: 2.67, maxCurrent: 22.4, avgTemp: 24.5, maxTemp: 29.8 },
-  },
-  BMP_cell2: {
-    alerts: [
-      { type: 'Undervoltage', severity: 'Low', count: 203, message: 'Voltage dipped below 2.70 V in 203 readings' },
-    ],
-    summary: { maxVoltage: 4.17, minVoltage: 2.66, maxCurrent: 23.1, avgTemp: 25.0, maxTemp: 30.4 },
-  },
-  BMR_cell1: {
-    alerts: [
-      { type: 'Overvoltage',  severity: 'High',   count: 1847, message: 'Voltage exceeded 4.20 V — upper charging limit pushed hard' },
-      { type: 'Undervoltage', severity: 'High',   count: 1234, message: 'Voltage below 2.70 V — deep discharge events' },
-      { type: 'Overcurrent',  severity: 'Medium', count: 412,  message: 'Current exceeded 2C rate — high-power trading cycles' },
-    ],
-    summary: { maxVoltage: 4.24, minVoltage: 2.61, maxCurrent: 38.7, avgTemp: 28.9, maxTemp: 41.3 },
-  },
-  BMR_cell2: {
-    alerts: [
-      { type: 'Overvoltage',     severity: 'High',   count: 2103, message: 'Voltage exceeded 4.20 V — aggressive upper limit operation' },
-      { type: 'Undervoltage',    severity: 'High',   count: 1456, message: 'Voltage below 2.70 V — sustained deep discharge events' },
-      { type: 'Overcurrent',     severity: 'High',   count: 678,  message: 'Current exceeded 2C rate — highest power demand of all cells' },
-      { type: 'Overtemperature', severity: 'Medium', count: 89,   message: 'Temperature exceeded 40°C — thermal stress detected' },
-    ],
-    summary: { maxVoltage: 4.25, minVoltage: 2.58, maxCurrent: 41.2, avgTemp: 30.1, maxTemp: 44.6 },
-  },
-  SPM_cell1: {
-    alerts: [],
-    summary: { maxVoltage: 4.12, minVoltage: 2.75, maxCurrent: 15.8, avgTemp: 23.7, maxTemp: 27.3 },
-  },
-  SPM_cell2: {
-    alerts: [
-      { type: 'Undervoltage', severity: 'Low', count: 43, message: 'Minor voltage dip below 2.70 V in 43 readings' },
-    ],
-    summary: { maxVoltage: 4.13, minVoltage: 2.69, maxCurrent: 16.2, avgTemp: 23.9, maxTemp: 27.8 },
-  },
-};
+function buildStressEntry(d) {
+  const alerts = [];
+  if (d.overvoltage > 0) {
+    alerts.push({
+      type: 'Overvoltage',
+      severity: d.overvoltage > 10000 ? 'High' : 'Low',
+      count: d.overvoltage,
+      message: d.overvoltage > 10000
+        ? `Voltage exceeded 4.20 V in ${d.overvoltage.toLocaleString()} readings — upper limit consistently breached`
+        : `Voltage briefly exceeded 4.20 V in ${d.overvoltage.toLocaleString()} readings`,
+    });
+  }
+  if (d.undervoltage > 0) {
+    alerts.push({
+      type: 'Undervoltage',
+      severity: d.undervoltage > 10000 ? 'High' : 'Medium',
+      count: d.undervoltage,
+      message: d.undervoltage > 10000
+        ? `Voltage fell below 2.70 V in ${d.undervoltage.toLocaleString()} readings — deep discharge events`
+        : `Voltage dipped below 2.70 V in ${d.undervoltage.toLocaleString()} readings`,
+    });
+  }
+  if (d.overtemperature > 0) {
+    alerts.push({
+      type: 'Overtemperature',
+      severity: 'Low',
+      count: d.overtemperature,
+      message: `Temperature exceeded 40°C in ${d.overtemperature} reading${d.overtemperature !== 1 ? 's' : ''}`,
+    });
+  }
+  return {
+    alerts,
+    summary: {
+      maxVoltage: d.max_V,
+      minVoltage: d.min_V,
+      maxCurrent: d.max_I_A,
+      avgTemp:    d.avg_T_C,
+      maxTemp:    d.max_T_C,
+    },
+  };
+}
+
+const STRESS_DATA = Object.fromEntries(
+  Object.entries(stressRaw).map(([id, d]) => [id, buildStressEntry(d)])
+);
 
 const DEGRADATION_DRIVERS = {
   BMP_cell1: { tempContribution: 0.52, cRateContribution: 0.89, doDContribution: 1.21, avgTemp: 24.5, avgCRate: 0.52, avgDoD: 68.4, tempScore: 2, cRateScore: 3, doDScore: 4 },

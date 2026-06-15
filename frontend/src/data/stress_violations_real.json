@@ -1,0 +1,68 @@
+{
+  "BMP_cell1": {
+    "rows_used": 67613,
+    "overvoltage": 0,
+    "undervoltage": 0,
+    "overtemperature": 0,
+    "max_V": 4.09,
+    "min_V": 3.33,
+    "max_I_A": 17.0,
+    "avg_T_C": 18.9,
+    "max_T_C": 28.9
+  },
+  "BMP_cell2": {
+    "rows_used": 70907,
+    "overvoltage": 0,
+    "undervoltage": 0,
+    "overtemperature": 0,
+    "max_V": 4.12,
+    "min_V": 3.31,
+    "max_I_A": 17.0,
+    "avg_T_C": 18.0,
+    "max_T_C": 29.0
+  },
+  "BMR_cell1": {
+    "rows_used": 222233,
+    "overvoltage": 47324,
+    "undervoltage": 58530,
+    "overtemperature": 0,
+    "max_V": 4.24,
+    "min_V": 2.68,
+    "max_I_A": 27.1,
+    "avg_T_C": 11.7,
+    "max_T_C": 38.2
+  },
+  "BMR_cell2": {
+    "rows_used": 250045,
+    "overvoltage": 51747,
+    "undervoltage": 61251,
+    "overtemperature": 1,
+    "max_V": 4.24,
+    "min_V": 2.62,
+    "max_I_A": 27.1,
+    "avg_T_C": 10.0,
+    "max_T_C": 46.7
+  },
+  "SPM_cell1": {
+    "rows_used": 75793,
+    "overvoltage": 99,
+    "undervoltage": 2566,
+    "overtemperature": 3,
+    "max_V": 4.2,
+    "min_V": 2.61,
+    "max_I_A": 29.3,
+    "avg_T_C": 17.3,
+    "max_T_C": 50.5
+  },
+  "SPM_cell2": {
+    "rows_used": 74485,
+    "overvoltage": 51,
+    "undervoltage": 1590,
+    "overtemperature": 0,
+    "max_V": 4.2,
+    "min_V": 2.59,
+    "max_I_A": 29.2,
+    "avg_T_C": 17.7,
+    "max_T_C": 31.1
+  }
+}

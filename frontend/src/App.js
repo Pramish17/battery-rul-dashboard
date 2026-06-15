@@ -263,10 +263,12 @@ function StressModule() {
     <div>
       <InfoCard title="Why do BMR cells wear out faster?">
         <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.65, margin: 0 }}>
-          BMR cells are pushed harder in every charge-discharge cycle — they charge and discharge across
-          the full voltage range (2.58–4.25 V vs 2.67–4.12 V for SPM), draw higher currents (&gt;2C),
-          and run hotter. Each of these stresses accelerates lithium plating, electrolyte degradation,
-          and particle cracking. The violations below quantify how often limits were exceeded.
+          BMR cells operate across a much wider voltage window (2.62–4.24 V) than BMP (3.31–4.12 V)
+          or SPM (2.59–4.20 V), and repeatedly breach the safe operating limits of 4.20 V and 2.70 V.
+          BMR exceeds these thresholds tens of thousands of times per cell. BMP cells never breach
+          either limit; SPM cells do so only occasionally. Repeated exceedances of these voltage limits
+          accelerate lithium plating, electrolyte decomposition, and particle cracking — the root causes
+          of BMR's rapid capacity loss.
         </p>
       </InfoCard>
       <StressAlertsPanel cells={CELLS} />
