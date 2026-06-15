@@ -335,7 +335,7 @@ function NASACapacityChart() {
 
   return (
     <Card style={{ marginBottom: 20 }}>
-      <ChartHeadline text="B0006 is the only cell to reach end-of-life during the experiment — it fades 41.7% in 168 cycles" />
+      <ChartHeadline text="B0006 fades fastest — 41.7% over 168 cycles — and ends well below its end-of-life threshold; it is treated as a boundary case for RUL" />
       <ChartSub text="NASA 18650 cells · capacity (Ah) vs charge–discharge cycle · EOL = 70% of each cell's initial capacity" />
 
       <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 14, background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 8, padding: '8px 12px' }}>
@@ -395,7 +395,7 @@ function NASACapacityChart() {
           {NASA_CELLS_DATA.map(cell => (
             <Line
               key={cell.id}
-              type="monotone"
+              type="linear"
               dataKey={cell.id}
               stroke={cell.color}
               strokeWidth={2}

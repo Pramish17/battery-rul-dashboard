@@ -47,7 +47,7 @@ function StrategyComparison({ cells }) {
         Physics-guided cycling (SPM) preserves the most battery health — aggressive trading (BMR) destroys it fastest
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        Averaged over 2 cells per strategy · RUL estimated by linear extrapolation from observed fade rate
+        Averaged over 2 cells per strategy · RUL from full-trajectory linear fit to EOL
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 16 }}>

@@ -20,7 +20,7 @@ function RULChart({ cells }) {
         BMR cells have ~17–18 months of total predicted life — BMP and SPM cells are projected to last much longer
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        Total predicted life from experiment start · two-point average fade rate · EOL = 80% of each cell's initial capacity C(0)
+        Total predicted life from experiment start · full-trajectory linear fit · EOL = 80% of each cell's initial capacity C(0)
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <BarChart
