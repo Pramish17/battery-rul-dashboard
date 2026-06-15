@@ -27,15 +27,15 @@ function BenchmarkPanel() {
           Mean RMSE (Ah) across all 6 Oxford cells — lower is better · computed by 5-fold cross-validation
         </div>
 
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={meanData} layout="vertical" margin={{ top: 0, right: 70, bottom: 0, left: 10 }}>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={meanData} layout="vertical" margin={{ top: 0, right: 70, bottom: 35, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
             <XAxis
               type="number"
               domain={[0, 0.45]}
               tickFormatter={v => v.toFixed(2)}
               tick={{ fontSize: 11, fill: '#9ca3af' }}
-              label={{ value: 'RMSE (Ah) — lower is better', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#9ca3af' }}
+              label={{ value: 'RMSE (Ah) — lower is better', position: 'insideBottom', offset: -12, fontSize: 11, fill: '#9ca3af' }}
             />
             <YAxis
               type="category"

@@ -22,11 +22,11 @@ function RULChart({ cells }) {
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
         Total predicted life from experiment start · full-trajectory linear fit · EOL = 80% of each cell's initial capacity C(0)
       </div>
-      <ResponsiveContainer width="100%" height={240}>
+      <ResponsiveContainer width="100%" height={260}>
         <BarChart
           data={data}
           layout="vertical"
-          margin={{ top: 0, right: 60, bottom: 0, left: 10 }}
+          margin={{ top: 0, right: 60, bottom: 35, left: 10 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
           <XAxis
@@ -34,7 +34,7 @@ function RULChart({ cells }) {
             domain={[0, CAP + 5]}
             tickFormatter={v => v >= CAP ? `>${CAP}` : `${v}`}
             tick={{ fontSize: 11, fill: '#9ca3af' }}
-            label={{ value: 'Months total life (from start)', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#9ca3af' }}
+            label={{ value: 'Months total life (from start)', position: 'insideBottom', offset: -12, fontSize: 11, fill: '#9ca3af' }}
           />
           <YAxis
             type="category"

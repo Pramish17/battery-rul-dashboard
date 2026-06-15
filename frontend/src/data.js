@@ -1,4 +1,5 @@
 // src/data.js — hardcoded verified research data and computed values
+import nasaFullData from './data/nasa_capacity_full.json';
 
 export const MONTHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12.3];
 
@@ -215,101 +216,24 @@ export const NASA_CELLS_DATA = [
     id: 'B0005', label: 'B0005', color: '#3b82f6',
     initialCap: 1.856, finalCap: 1.325, totalCycles: 168, fadePct: 28.6,
     eolCap: parseFloat((1.856 * 0.70).toFixed(3)),
-    data: [
-      { cycle: 0,   capacity: 1.856 },
-      { cycle: 10,  capacity: 1.825 },
-      { cycle: 20,  capacity: 1.838 }, // regeneration spike
-      { cycle: 30,  capacity: 1.804 },
-      { cycle: 40,  capacity: 1.769 },
-      { cycle: 50,  capacity: 1.743 },
-      { cycle: 60,  capacity: 1.711 },
-      { cycle: 70,  capacity: 1.669 },
-      { cycle: 80,  capacity: 1.683 }, // regeneration spike
-      { cycle: 90,  capacity: 1.633 },
-      { cycle: 100, capacity: 1.584 },
-      { cycle: 110, capacity: 1.553 },
-      { cycle: 120, capacity: 1.479 },
-      { cycle: 132, capacity: 1.435 },
-      { cycle: 140, capacity: 1.406 },
-      { cycle: 150, capacity: 1.382 },
-      { cycle: 160, capacity: 1.348 },
-      { cycle: 168, capacity: 1.325 },
-    ],
+    data: nasaFullData.B0005,
   },
   {
     id: 'B0006', label: 'B0006', color: '#ef4444',
     initialCap: 2.035, finalCap: 1.186, totalCycles: 168, fadePct: 41.7,
     eolCap: parseFloat((2.035 * 0.70).toFixed(3)),
-    data: [
-      { cycle: 0,   capacity: 2.035 },
-      { cycle: 10,  capacity: 1.997 },
-      { cycle: 20,  capacity: 1.952 },
-      { cycle: 30,  capacity: 1.912 },
-      { cycle: 40,  capacity: 1.968 }, // regeneration spike
-      { cycle: 50,  capacity: 1.858 },
-      { cycle: 60,  capacity: 1.797 },
-      { cycle: 70,  capacity: 1.736 },
-      { cycle: 80,  capacity: 1.670 },
-      { cycle: 90,  capacity: 1.609 },
-      { cycle: 100, capacity: 1.543 },
-      { cycle: 110, capacity: 1.480 },
-      { cycle: 120, capacity: 1.415 }, // crosses 70% EOL threshold (1.425 Ah) here
-      { cycle: 132, capacity: 1.340 },
-      { cycle: 140, capacity: 1.289 },
-      { cycle: 150, capacity: 1.243 },
-      { cycle: 160, capacity: 1.207 },
-      { cycle: 168, capacity: 1.186 },
-    ],
+    data: nasaFullData.B0006,
   },
   {
     id: 'B0007', label: 'B0007', color: '#22c55e',
     initialCap: 1.891, finalCap: 1.432, totalCycles: 168, fadePct: 24.3,
     eolCap: parseFloat((1.891 * 0.70).toFixed(3)),
-    data: [
-      { cycle: 0,   capacity: 1.891 },
-      { cycle: 20,  capacity: 1.836 },
-      { cycle: 40,  capacity: 1.782 },
-      { cycle: 60,  capacity: 1.727 },
-      { cycle: 80,  capacity: 1.673 },
-      { cycle: 100, capacity: 1.617 },
-      { cycle: 120, capacity: 1.564 },
-      { cycle: 132, capacity: 1.530 },
-      { cycle: 140, capacity: 1.507 },
-      { cycle: 160, capacity: 1.455 },
-      { cycle: 168, capacity: 1.432 },
-    ],
+    data: nasaFullData.B0007,
   },
   {
     id: 'B0018', label: 'B0018', color: '#f59e0b',
     initialCap: 1.855, finalCap: 1.341, totalCycles: 132, fadePct: 27.7,
     eolCap: parseFloat((1.855 * 0.70).toFixed(3)),
-    data: [
-      { cycle: 0,   capacity: 1.855 },
-      { cycle: 20,  capacity: 1.777 },
-      { cycle: 40,  capacity: 1.699 },
-      { cycle: 60,  capacity: 1.621 },
-      { cycle: 80,  capacity: 1.543 },
-      { cycle: 100, capacity: 1.466 },
-      { cycle: 120, capacity: 1.388 },
-      { cycle: 132, capacity: 1.341 },
-    ],
+    data: nasaFullData.B0018,
   },
 ];
-
-// Merged data array for recharts (outer join on cycle)
-function mergeNASAChartData() {
-  const allCycles = [...new Set(
-    NASA_CELLS_DATA.flatMap(c => c.data.map(d => d.cycle))
-  )].sort((a, b) => a - b);
-
-  return allCycles.map(cycle => {
-    const point = { cycle };
-    NASA_CELLS_DATA.forEach(cell => {
-      const match = cell.data.find(d => d.cycle === cycle);
-      if (match) point[cell.id] = match.capacity;
-    });
-    return point;
-  });
-}
-
-export const NASA_CHART_DATA = mergeNASAChartData();

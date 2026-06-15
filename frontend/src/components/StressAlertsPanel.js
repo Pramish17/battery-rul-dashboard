@@ -14,7 +14,7 @@ function StressAlertsPanel({ cells }) {
         Overvoltage (&gt;4.20 V) · Undervoltage (&lt;2.70 V) · Overtemperature (&gt;40 °C) · Overcurrent (&gt;2C) — estimated from cycling profiles
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
         {cells.map(cell => {
           const stress    = cell.stress || {};
           const alerts    = stress.alerts  || [];

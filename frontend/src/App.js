@@ -18,7 +18,7 @@ import {
   CELLS, CHART_SERIES, EOL_CAP,
   OXFORD_RMSE, NASA_RMSE,
   MODELS, MODEL_DESCRIPTIONS, MODEL_COLORS,
-  NASA_CELLS_DATA, NASA_CHART_DATA,
+  NASA_CELLS_DATA,
 } from './data';
 import './App.css';
 
@@ -42,6 +42,8 @@ function TabBar({ active, onChange }) {
       display: 'flex',
       gap: 0,
       overflowX: 'auto',
+      flexWrap: 'nowrap',
+      WebkitOverflowScrolling: 'touch',
     }}>
       {TABS.map(tab => {
         const isActive = tab.id === active;
@@ -140,7 +142,7 @@ function OverviewModule() {
   return (
     <div>
       {/* Metric cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 24 }}>
         <MetricCard
           label="Critical cells"
           value={criticalCells.length}
@@ -222,7 +224,7 @@ function OverviewModule() {
       <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 12 }}>
         Cell health status — all 6 Oxford cells (SOH = C(k) / C(0) × 100%, EOL = 80% of initial)
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
         {CELLS.map(c => <CellCard key={c.id} cell={c} />)}
       </div>
     </div>
@@ -246,7 +248,7 @@ function SOHModule() {
       <div style={{ marginBottom: 16 }}>
         <CapacityChart series={CHART_SERIES} eolCap={EOL_CAP} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, alignItems: 'stretch' }}>
         <SOHChart series={CHART_SERIES} />
         <RULChart cells={CELLS} />
       </div>
@@ -278,7 +280,7 @@ function DegradationModule() {
   return (
     <div>
       <InfoCard title="What do BMP, BMR and SPM mean?">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginTop: 4 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginTop: 4 }}>
           {[
             {
               name: 'BMP', color: '#1d4ed8',
@@ -307,7 +309,7 @@ function DegradationModule() {
           ))}
         </div>
       </InfoCard>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, alignItems: 'stretch' }}>
         <DegradationDrivers cells={CELLS} />
         <StrategyComparison cells={CELLS} />
       </div>
@@ -353,8 +355,8 @@ function NASACapacityChart() {
         ))}
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={NASA_CHART_DATA} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+      <ResponsiveContainer width="100%" height={330}>
+        <LineChart margin={{ top: 5, right: 20, bottom: 35, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
           <XAxis
             dataKey="cycle"
@@ -362,7 +364,7 @@ function NASACapacityChart() {
             domain={[0, 168]}
             tickFormatter={v => `C${v}`}
             tick={{ fontSize: 11, fill: '#9ca3af' }}
-            label={{ value: 'Cycle number', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#9ca3af' }}
+            label={{ value: 'Cycle number', position: 'insideBottom', offset: -12, fontSize: 11, fill: '#9ca3af' }}
           />
           <YAxis
             domain={[1.1, 2.1]}
@@ -395,11 +397,18 @@ function NASACapacityChart() {
           {NASA_CELLS_DATA.map(cell => (
             <Line
               key={cell.id}
+              data={cell.data}
               type="linear"
-              dataKey={cell.id}
+              dataKey="capacity"
+              name={cell.id}
               stroke={cell.color}
               strokeWidth={2}
-              dot={{ r: 3, fill: cell.color }}
+              dot={(dotProps) => {
+                const { cx, cy, index } = dotProps;
+                const last = cell.data.length - 1;
+                if (index !== 0 && index !== last && index % 10 !== 0) return null;
+                return <circle key={`${cell.id}-${index}`} cx={cx} cy={cy} r={3} fill={cell.color} />;
+              }}
               activeDot={{ r: 5 }}
               connectNulls={false}
               legendType="none"
@@ -422,10 +431,10 @@ function NASARmseChart() {
     <Card style={{ marginBottom: 20 }}>
       <ChartHeadline text="Exponential decay is the clear winner on NASA data — Polynomial falls to 4th place" />
       <ChartSub text="Mean RMSE (Ah) across all 4 NASA cells — lower is better" />
-      <ResponsiveContainer width="100%" height={220}>
-        <BarChart data={data} layout="vertical" margin={{ top: 0, right: 60, bottom: 0, left: 10 }}>
+      <ResponsiveContainer width="100%" height={250}>
+        <BarChart data={data} layout="vertical" margin={{ top: 0, right: 60, bottom: 35, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
-          <XAxis type="number" domain={[0, 0.30]} tickFormatter={v => v.toFixed(2)} tick={{ fontSize: 11, fill: '#9ca3af' }} label={{ value: 'RMSE (Ah)', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#9ca3af' }} />
+          <XAxis type="number" domain={[0, 0.30]} tickFormatter={v => v.toFixed(2)} tick={{ fontSize: 11, fill: '#9ca3af' }} label={{ value: 'RMSE (Ah)', position: 'insideBottom', offset: -12, fontSize: 11, fill: '#9ca3af' }} />
           <YAxis type="category" dataKey="model" width={100} tick={{ fontSize: 11, fill: '#374151' }} />
           <Tooltip formatter={(v) => [`${v.toFixed(3)} Ah`, 'Mean RMSE']} />
           <Bar dataKey="rmse" radius={[0, 6, 6, 0]}>
@@ -560,7 +569,7 @@ function NASAModule() {
     <div>
       <WhatThisMeansCard />
       <NASACapacityChart />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, alignItems: 'stretch' }}>
         <NASARmseChart />
         <NASAPerCellTable />
       </div>

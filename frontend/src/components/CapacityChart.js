@@ -28,7 +28,7 @@ function CapacityChart({ series, eolCap }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 16px' }}>
       <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
-        BMR cells (red) are heading toward end-of-life — BMP and SPM cells will last many more years
+        BMR cells (red) are heading toward end-of-life — BMP and SPM cells remain well above their EOL threshold
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 12 }}>
         Solid line = 13 monthly observations (month 0–12.3) · Dotted line = linear projection to EOL ·

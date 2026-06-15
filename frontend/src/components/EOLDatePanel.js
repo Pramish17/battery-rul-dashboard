@@ -32,16 +32,16 @@ function EOLDatePanel({ cells }) {
         Full-trajectory linear fit · EOL = 80% of each cell's initial capacity C(0) · months total life from experiment start
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 60, bottom: 16, left: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, alignItems: 'stretch' }}>
+        <ResponsiveContainer width="100%" height={260}>
+          <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 60, bottom: 35, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
             <XAxis
               type="number"
               domain={[0, CAP + 5]}
               tickFormatter={v => v >= CAP ? `>${CAP}` : String(v)}
               tick={{ fontSize: 11, fill: '#9ca3af' }}
-              label={{ value: 'Months total life (from start)', position: 'insideBottom', offset: -4, fontSize: 11, fill: '#9ca3af' }}
+              label={{ value: 'Months total life (from start)', position: 'insideBottom', offset: -12, fontSize: 11, fill: '#9ca3af' }}
             />
             <YAxis
               type="category"

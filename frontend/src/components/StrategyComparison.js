@@ -50,7 +50,7 @@ function StrategyComparison({ cells }) {
         Averaged over 2 cells per strategy · RUL from full-trajectory linear fit to EOL
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14, marginBottom: 16 }}>
         {STRATEGIES.filter(s => grouped[s]).map(s => {
           const g      = grouped[s];
           const color  = STRATEGY_COLORS[s];
