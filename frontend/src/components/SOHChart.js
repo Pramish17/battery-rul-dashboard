@@ -14,10 +14,10 @@ function SOHChart({ series }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 16px' }}>
       <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
-        BMR cells are approaching the 80% end-of-life threshold — all others remain healthy
+        BMR cells are approaching the 80% end-of-life threshold - all others remain healthy
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        SOH = C(k) / C(0) × 100% where C(0) is each cell's first measured capacity — all cells start at 100% by definition
+        SOH = C(k) / C(0) × 100% where C(0) is each cell's first measured capacity - all cells start at 100% by definition
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>

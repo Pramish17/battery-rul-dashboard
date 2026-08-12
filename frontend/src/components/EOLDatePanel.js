@@ -26,7 +26,7 @@ function EOLDatePanel({ cells }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
       <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
-        BMR cells reach their end-of-life threshold after ~17–18 months from experiment start — BMP and SPM cells do not reach end-of-life within the horizon
+        BMR cells reach their end-of-life threshold after ~17-18 months from experiment start - BMP and SPM cells do not reach end-of-life within the horizon
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
         Full-trajectory linear fit · EOL = 80% of each cell's initial capacity C(0) · months total life from experiment start

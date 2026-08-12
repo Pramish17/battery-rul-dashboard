@@ -17,7 +17,7 @@ function RULChart({ cells }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 16px' }}>
       <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
-        BMR cells have ~17–18 months of total predicted life — BMP and SPM cells are projected to last much longer
+        BMR cells have ~17-18 months of total predicted life - BMP and SPM cells are projected to last much longer
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
         Total predicted life from experiment start · full-trajectory linear fit · EOL = 80% of each cell's initial capacity C(0)

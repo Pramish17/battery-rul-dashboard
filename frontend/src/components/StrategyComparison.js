@@ -6,7 +6,7 @@ const STRATEGY_NAMES  = {
   SPM: 'Physics-guided, most battery-friendly',
 };
 const STRATEGY_DESC = {
-  BMP: 'Cautious trading — limits depth of discharge and current rate. Slower revenue but much longer battery life.',
+  BMP: 'Cautious trading - limits depth of discharge and current rate. Slower revenue but much longer battery life.',
   BMR: 'Aggressive full-range cycling at peak current. Maximises short-term revenue at the cost of rapid battery degradation.',
   SPM: 'Uses an electrochemical Single Particle Model to avoid internal stress. Lowest fade rate of any strategy tested.',
 };
@@ -44,7 +44,7 @@ function StrategyComparison({ cells }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
       <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
-        Physics-guided cycling (SPM) preserves the most battery health — aggressive trading (BMR) destroys it fastest
+        Physics-guided cycling (SPM) preserves the most battery health - aggressive trading (BMR) destroys it fastest
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
         Averaged over 2 cells per strategy · RUL from full-trajectory linear fit to EOL

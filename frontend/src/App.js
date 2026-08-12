@@ -18,6 +18,7 @@ import {
   CELLS, CHART_SERIES, EOL_CAP,
   OXFORD_RMSE, NASA_RMSE,
   MODELS, MODEL_DESCRIPTIONS, MODEL_COLORS,
+  MODEL_LABELS, BASELINE_MODEL, ROLLING_ORIGIN,
   NASA_CELLS_DATA,
 } from './data';
 import './App.css';
@@ -178,14 +179,18 @@ function OverviewModule() {
             12 months, BMR cells have lost ~15% capacity vs ~2% for SPM.
           </li>
           <li>
-            <strong>No single prediction model wins on both datasets.</strong> Polynomial regression is best
-            on Oxford (RMSE 0.138 Ah) but ranks 4th on NASA (0.100 Ah). Exponential is best on NASA
-            (0.047 Ah) but 3rd on Oxford (0.185 Ah). The right model depends on battery usage patterns.
+            <strong>No single prediction model wins on both datasets.</strong> On Oxford, a CNN-LSTM
+            (0.125 Ah) and polynomial regression (0.138 Ah) are statistically tied for best, yet
+            polynomial ranks 6th on NASA (0.100 Ah), where exponential decay wins (0.047 Ah) but is
+            only 4th on Oxford (0.185 Ah). Across the ten cells, five different models are the
+            per-cell winner. The right model depends on the battery's usage pattern and on how much
+            history is available.
           </li>
           <li>
-            <strong>Random Forest cannot see the future.</strong> It matches patterns in training data but
-            catastrophically fails on fast-degrading cells (BMR RMSE up to 0.892 Ah) because it cannot
-            extrapolate below its training range.
+            <strong>Random Forest and XGBoost cannot see the future.</strong> They match patterns in
+            training data but both catastrophically fail on fast-degrading cells (BMR RMSE up to
+            0.892 Ah) because they cannot extrapolate below their training range - on NASA both are
+            beaten by a naive persistence baseline.
           </li>
         </ul>
       </InfoCard>
@@ -207,7 +212,7 @@ function OverviewModule() {
         </div>
         <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           {[
-            { label: 'Oxford winner', value: 'Polynomial', sub: '0.138 Ah RMSE' },
+            { label: 'Oxford winner', value: 'CNN-LSTM & Polynomial (tied)', sub: '0.125 / 0.138 Ah' },
             { label: 'NASA winner',   value: 'Exponential', sub: '0.047 Ah RMSE' },
             { label: 'Conclusion',    value: 'Regime matters', sub: 'No universal best' },
           ].map(({ label, value, sub }) => (
@@ -222,7 +227,7 @@ function OverviewModule() {
 
       {/* Cell cards */}
       <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 12 }}>
-        Cell health status — all 6 Oxford cells (SOH = C(k) / C(0) × 100%, EOL = 80% of initial)
+        Cell health status - all 6 Oxford cells (SOH = C(k) / C(0) × 100%, EOL = 80% of initial)
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
         {CELLS.map(c => <CellCard key={c.id} cell={c} />)}
@@ -263,11 +268,11 @@ function StressModule() {
     <div>
       <InfoCard title="Why do BMR cells wear out faster?">
         <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.65, margin: 0 }}>
-          BMR cells operate across a much wider voltage window (2.62–4.24 V) than BMP (3.31–4.12 V)
-          or SPM (2.59–4.20 V), and repeatedly breach the safe operating limits of 4.20 V and 2.70 V.
+          BMR cells operate across a much wider voltage window (2.62-4.24 V) than BMP (3.31-4.12 V)
+          or SPM (2.59-4.20 V), and repeatedly breach the safe operating limits of 4.20 V and 2.70 V.
           BMR exceeds these thresholds tens of thousands of times per cell. BMP cells never breach
           either limit; SPM cells do so only occasionally. Repeated exceedances of these voltage limits
-          accelerate lithium plating, electrolyte decomposition, and particle cracking — the root causes
+          accelerate lithium plating, electrolyte decomposition, and particle cracking - the root causes
           of BMR's rapid capacity loss.
         </p>
       </InfoCard>
@@ -286,17 +291,17 @@ function DegradationModule() {
           {[
             {
               name: 'BMP', color: '#1d4ed8',
-              short: 'Cautious trading — battery-friendly',
+              short: 'Cautious trading - battery-friendly',
               desc: 'Optimises for profit but limits battery stress. Charges and discharges within a moderate voltage window at modest currents.',
             },
             {
               name: 'BMR', color: '#b91c1c',
-              short: 'Aggressive trading — revenue-first, battery-damaging',
+              short: 'Aggressive trading - revenue-first, battery-damaging',
               desc: 'Maximises trading revenue by pushing the battery to its absolute voltage and current limits every cycle. Causes fastest degradation.',
             },
             {
               name: 'SPM', color: '#15803d',
-              short: 'Physics-guided — most battery-friendly',
+              short: 'Physics-guided - most battery-friendly',
               desc: 'Uses an electrochemical Single Particle Model to schedule cycles that minimise internal stress. Results in the slowest capacity loss.',
             },
           ].map(s => (
@@ -339,12 +344,12 @@ function NASACapacityChart() {
 
   return (
     <Card style={{ marginBottom: 20 }}>
-      <ChartHeadline text="B0006 fades fastest — 41.7% over 168 cycles — and ends well below its end-of-life threshold; it is treated as a boundary case for RUL" />
-      <ChartSub text="NASA 18650 cells · capacity (Ah) vs charge–discharge cycle · EOL = 70% of each cell's initial capacity" />
+      <ChartHeadline text="B0006 fades fastest - 41.7% over 168 cycles - and ends well below its end-of-life threshold; it is treated as a boundary case for RUL" />
+      <ChartSub text="NASA 18650 cells · capacity (Ah) vs charge-discharge cycle · EOL = 70% of each cell's initial capacity" />
 
       <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 14, background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 8, padding: '8px 12px' }}>
         <strong>About the upticks:</strong> Small capacity increases (visible at cycle 20 for B0005 and cycle 40 for B0006) are
-        real electrochemical behaviour — lithium redistribution within the electrode temporarily recovers
+        real electrochemical behaviour - lithium redistribution within the electrode temporarily recovers
         some capacity. They are not measurement errors.
       </div>
 
@@ -382,7 +387,7 @@ function NASACapacityChart() {
             }}
             labelFormatter={v => `Cycle ${v}`}
           />
-          {/* EOL threshold for B0006 — the only cell that crosses it */}
+          {/* EOL threshold for B0006 - the only cell that crosses it */}
           <ReferenceLine
             y={b0006EolCap}
             stroke="#ef4444"
@@ -423,21 +428,25 @@ function NASACapacityChart() {
 }
 
 function NASARmseChart() {
+  let rank = 0;
   const data = MODELS.map(m => ({
     model: m,
+    label: MODEL_LABELS[m] || m,
     rmse: NASA_RMSE.mean[m],
     color: MODEL_COLORS[m],
-  })).sort((a, b) => a.rmse - b.rmse);
+  }))
+    .sort((a, b) => a.rmse - b.rmse)
+    .map(d => ({ ...d, rank: d.model === BASELINE_MODEL ? null : ++rank }));
 
   return (
     <Card style={{ marginBottom: 20 }}>
-      <ChartHeadline text="Exponential decay is the clear winner on NASA data — Polynomial falls to 4th place" />
-      <ChartSub text="Mean RMSE (Ah) across all 4 NASA cells — lower is better" />
-      <ResponsiveContainer width="100%" height={250}>
+      <ChartHeadline text="Exponential decay wins on NASA - CNN-LSTM second; a naive persistence baseline beats both tree ensembles" />
+      <ChartSub text="Mean RMSE (Ah) across all 4 NASA cells - lower is better · chronological 70/30 train/test split per cell" />
+      <ResponsiveContainer width="100%" height={320}>
         <BarChart data={data} layout="vertical" margin={{ top: 0, right: 60, bottom: 35, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
           <XAxis type="number" domain={[0, 0.30]} tickFormatter={v => v.toFixed(2)} tick={{ fontSize: 11, fill: '#9ca3af' }} label={{ value: 'RMSE (Ah)', position: 'insideBottom', offset: -12, fontSize: 11, fill: '#9ca3af' }} />
-          <YAxis type="category" dataKey="model" width={100} tick={{ fontSize: 11, fill: '#374151' }} />
+          <YAxis type="category" dataKey="label" width={130} tick={{ fontSize: 11, fill: '#374151' }} />
           <Tooltip formatter={(v) => [`${v.toFixed(3)} Ah`, 'Mean RMSE']} />
           <Bar dataKey="rmse" radius={[0, 6, 6, 0]}>
             {data.map((entry, i) => (
@@ -447,10 +456,10 @@ function NASARmseChart() {
         </BarChart>
       </ResponsiveContainer>
       <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {data.map((d, i) => (
+        {data.map(d => (
           <div key={d.model} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontSize: 12 }}>
-            <span style={{ fontWeight: 700, color: d.color, minWidth: 18 }}>#{i + 1}</span>
-            <span style={{ fontWeight: 600, color: '#374151', minWidth: 110 }}>{d.model}</span>
+            <span style={{ fontWeight: 700, color: d.color, minWidth: 18 }}>{d.rank ? `#${d.rank}` : '-'}</span>
+            <span style={{ fontWeight: 600, color: '#374151', minWidth: 110 }}>{d.label}</span>
             <span style={{ color: '#6b7280' }}>{MODEL_DESCRIPTIONS[d.model]}</span>
           </div>
         ))}
@@ -468,12 +477,12 @@ function CrossDatasetChart() {
 
   return (
     <Card style={{ marginBottom: 20 }}>
-      <ChartHeadline text="The best model depends on how the battery was used — no single model wins on both datasets" />
-      <ChartSub text="Mean RMSE (Ah) per model — Oxford (monthly checkpoints, trading protocol) vs NASA (per-cycle, lab conditions) — lower is better" />
+      <ChartHeadline text="The best model depends on how the battery was used - no single model wins on both datasets" />
+      <ChartSub text="Mean RMSE (Ah) per model - Oxford (monthly checkpoints, trading protocol) vs NASA (per-cycle, lab conditions) - lower is better · Persistence is a naive baseline (holds last training value)" />
       <ResponsiveContainer width="100%" height={280}>
         <BarChart data={data} margin={{ top: 10, right: 20, bottom: 5, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-          <XAxis dataKey="model" tick={{ fontSize: 11, fill: '#374151' }} />
+          <XAxis dataKey="model" tick={{ fontSize: 10, fill: '#374151' }} interval={0} />
           <YAxis tickFormatter={v => `${v.toFixed(2)}`} tick={{ fontSize: 11, fill: '#9ca3af' }} width={45} label={{ value: 'RMSE (Ah)', angle: -90, position: 'insideLeft', offset: 10, fontSize: 11, fill: '#9ca3af' }} />
           <Tooltip formatter={(v, name) => [`${v.toFixed(3)} Ah`, name]} />
           <Legend />
@@ -489,15 +498,19 @@ function NASAPerCellTable() {
   const cells = ['B0005', 'B0006', 'B0007', 'B0018'];
   return (
     <Card style={{ marginBottom: 20 }}>
-      <ChartHeadline text="NASA per-cell RMSE — B0006 favours Polynomial, the others favour Exponential" />
-      <ChartSub text="RMSE (Ah) per model per cell — winner per row highlighted" />
+      <ChartHeadline text="NASA per-cell RMSE - CNN-LSTM takes B0005 and B0007, Polynomial takes B0006, and the persistence baseline outright wins B0018" />
+      <ChartSub text="RMSE (Ah) per model per cell - winner per row highlighted · chronological 70/30 train/test split per cell" />
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
+        {/* 9 columns share a half-width card - tighter type than the Oxford table so
+            the Persistence column stays visible without horizontal scrolling */}
+        <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
-              <th style={{ textAlign: 'left', padding: '6px 8px', color: '#6b7280', fontWeight: 500 }}>Cell</th>
+              <th style={{ textAlign: 'left', padding: '6px 4px', color: '#6b7280', fontWeight: 500, fontSize: 10 }}>Cell</th>
               {MODELS.map(m => (
-                <th key={m} style={{ textAlign: 'right', padding: '6px 8px', color: MODEL_COLORS[m], fontWeight: 600 }}>{m}</th>
+                <th key={m} style={{ textAlign: 'right', padding: '6px 4px', color: MODEL_COLORS[m], fontWeight: 600, fontSize: 10 }}>
+                  {m === 'RandomForest' ? 'Random Forest' : m}
+                </th>
               ))}
             </tr>
           </thead>
@@ -507,10 +520,10 @@ function NASAPerCellTable() {
               const best = Math.min(...MODELS.map(m => row[m]));
               return (
                 <tr key={cellId} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                  <td style={{ padding: '6px 8px', fontWeight: 600, color: '#374151' }}>{cellId}</td>
+                  <td style={{ padding: '6px 4px', fontWeight: 600, color: '#374151' }}>{cellId}</td>
                   {MODELS.map(m => (
                     <td key={m} style={{
-                      padding: '6px 8px', textAlign: 'right', fontWeight: row[m] === best ? 700 : 400,
+                      padding: '6px 4px', textAlign: 'right', fontWeight: row[m] === best ? 700 : 400,
                       color: row[m] === best ? MODEL_COLORS[m] : '#374151',
                       background: row[m] === best ? `${MODEL_COLORS[m]}18` : 'transparent',
                     }}>
@@ -521,12 +534,12 @@ function NASAPerCellTable() {
               );
             })}
             <tr style={{ borderTop: '2px solid #e5e7eb', background: '#f9fafb' }}>
-              <td style={{ padding: '6px 8px', fontWeight: 700, color: '#374151' }}>Mean</td>
+              <td style={{ padding: '6px 4px', fontWeight: 700, color: '#374151' }}>Mean</td>
               {MODELS.map(m => {
                 const best = Math.min(...MODELS.map(mm => NASA_RMSE.mean[mm]));
                 return (
                   <td key={m} style={{
-                    padding: '6px 8px', textAlign: 'right', fontWeight: NASA_RMSE.mean[m] === best ? 700 : 600,
+                    padding: '6px 4px', textAlign: 'right', fontWeight: NASA_RMSE.mean[m] === best ? 700 : 600,
                     color: NASA_RMSE.mean[m] === best ? MODEL_COLORS[m] : '#374151',
                     background: NASA_RMSE.mean[m] === best ? `${MODEL_COLORS[m]}18` : 'transparent',
                   }}>
@@ -537,6 +550,10 @@ function NASAPerCellTable() {
             </tr>
           </tbody>
         </table>
+      </div>
+      <div style={{ marginTop: 12, fontSize: 11, color: '#6b7280' }}>
+        CNN-LSTM = mean over 5 seeds. Persistence is a naive baseline (holds last training value flat) -
+        it beats XGBoost and Random Forest on NASA and outright wins cell B0018.
       </div>
     </Card>
   );
@@ -555,14 +572,45 @@ function WhatThisMeansCard() {
         What this means for real-world battery management
       </div>
       <p style={{ fontSize: 13, color: '#166534', lineHeight: 1.7, margin: 0 }}>
-        Polynomial regression wins on the Oxford energy-trading dataset (monthly checkpoints, variable
-        cycling patterns) but ranks <strong>fourth</strong> on the NASA dataset (per-cycle lab data, more
-        uniform conditions). Exponential decay wins on NASA but ranks <strong>third</strong> on Oxford.
-        This means there is no single best degradation model — the right choice depends on the battery's
-        usage pattern and measurement frequency. A model should be selected or validated against data
+        On the Oxford energy-trading dataset (monthly checkpoints, variable cycling patterns), a CNN-LSTM
+        (0.125 Ah) and polynomial regression (0.138 Ah) are <strong>statistically tied</strong> for best -
+        the gap is smaller than the CNN-LSTM's seed-to-seed variability. Yet polynomial ranks
+        <strong> sixth</strong> on the NASA dataset (per-cycle lab data, more uniform conditions), where
+        exponential decay wins (0.047 Ah) but is only <strong>fourth</strong> on Oxford (0.185 Ah).
+        Across the ten cells, five different models are the per-cell winner. This means there is no single
+        best degradation model - the right choice depends on the battery's usage pattern, measurement
+        frequency, and how much history is available. A model should be selected or validated against data
         from the specific application it will be deployed in.
       </p>
     </div>
+  );
+}
+
+function RollingOriginCard() {
+  return (
+    <Card style={{ marginBottom: 20 }}>
+      <ChartHeadline text="The best model also depends on how much history you have (rolling-origin check)" />
+      <ChartSub text="Best model when retrained on the first 50/60/70/80% of each NASA cell" />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 14 }}>
+        {ROLLING_ORIGIN.map(({ origin, best }) => (
+          <div key={origin} style={{
+            border: '1px solid #e5e7eb',
+            borderRadius: 10,
+            padding: '12px 14px',
+            textAlign: 'center',
+            borderTop: `3px solid ${MODEL_COLORS[best]}`,
+          }}>
+            <div style={{ fontSize: 11, color: '#6b7280' }}>Trained on first {origin}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: MODEL_COLORS[best], marginTop: 4 }}>{best}</div>
+            <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>best at this origin</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6 }}>
+        Retrained at four forecast origins on NASA. The winner changes with training length;
+        exponential is the most robust (top-2 at every origin).
+      </div>
+    </Card>
   );
 }
 
@@ -576,6 +624,7 @@ function NASAModule() {
         <NASAPerCellTable />
       </div>
       <CrossDatasetChart />
+      <RollingOriginCard />
     </div>
   );
 }
@@ -619,12 +668,12 @@ function App() {
 
       {/* Footer citations */}
       <div style={{ padding: '10px 32px', borderTop: '1px solid #e5e7eb', fontSize: 11, color: '#9ca3af', textAlign: 'center', lineHeight: 1.7 }}>
-        Oxford Energy Trading Battery Degradation Dataset — Reniers, Mulder &amp; Howey, University of Oxford / EnergyVille, 2020.{' '}
+        Oxford Energy Trading Battery Degradation Dataset - Reniers, Mulder &amp; Howey, University of Oxford / EnergyVille, 2020.{' '}
         <span style={{ fontFamily: 'monospace' }}>DOI: 10.5287/bodleian:gJPdDzvP4</span>
         {activeTab === 'nasa' && (
           <>
             <br />
-            NASA PCoE Battery Dataset — Saha &amp; Goebel, NASA Ames Research Center, 2007.
+            NASA PCoE Battery Dataset - Saha &amp; Goebel, NASA Ames Research Center, 2007.
           </>
         )}
       </div>

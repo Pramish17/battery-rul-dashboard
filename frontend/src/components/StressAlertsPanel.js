@@ -8,10 +8,10 @@ function StressAlertsPanel({ cells }) {
   return (
     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
       <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 4, lineHeight: 1.35 }}>
-        BMR cells exceed voltage limits tens of thousands of times — BMP cells never do, SPM only occasionally
+        BMR cells exceed voltage limits tens of thousands of times - BMP cells never do, SPM only occasionally
       </div>
       <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16 }}>
-        Overvoltage (&gt;4.20 V) · Undervoltage (&lt;2.70 V) · Overtemperature (&gt;40 °C) — counted from per-cycle voltage/temperature profiles in the Oxford dataset
+        Overvoltage (&gt;4.20 V) · Undervoltage (&lt;2.70 V) · Overtemperature (&gt;40 °C) - counted from per-cycle voltage/temperature profiles in the Oxford dataset
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
@@ -77,11 +77,11 @@ function StressAlertsPanel({ cells }) {
                 marginTop: 8, paddingTop: 8, borderTop: '1px solid #e5e7eb',
               }}>
                 {[
-                  ['Max V',  summary.maxVoltage != null ? `${summary.maxVoltage} V`  : '–'],
-                  ['Min V',  summary.minVoltage != null ? `${summary.minVoltage} V`  : '–'],
-                  ['Max I',  summary.maxCurrent != null ? `${summary.maxCurrent} A`  : '–'],
-                  ['Avg T',  summary.avgTemp    != null ? `${summary.avgTemp} °C`    : '–'],
-                  ['Max T',  summary.maxTemp    != null ? `${summary.maxTemp} °C`    : '–'],
+                  ['Max V',  summary.maxVoltage != null ? `${summary.maxVoltage} V`  : '-'],
+                  ['Min V',  summary.minVoltage != null ? `${summary.minVoltage} V`  : '-'],
+                  ['Max I',  summary.maxCurrent != null ? `${summary.maxCurrent} A`  : '-'],
+                  ['Avg T',  summary.avgTemp    != null ? `${summary.avgTemp} °C`    : '-'],
+                  ['Max T',  summary.maxTemp    != null ? `${summary.maxTemp} °C`    : '-'],
                 ].map(([lbl, val]) => (
                   <div key={lbl} style={{ fontSize: 10, color: '#6b7280' }}>
                     {lbl}: <span style={{ fontWeight: 600, color: '#374151' }}>{val}</span>

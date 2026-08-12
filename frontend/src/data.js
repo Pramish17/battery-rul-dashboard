@@ -1,4 +1,4 @@
-// src/data.js — hardcoded verified research data and computed values
+// src/data.js - hardcoded verified research data and computed values
 import nasaFullData from './data/nasa_capacity_full.json';
 import stressRaw    from './data/stress_violations_real.json';
 
@@ -46,7 +46,7 @@ function buildProjection(caps, months) {
 
 // Paper-verified total predicted life (months from experiment start).
 // Method: full-trajectory OLS on the paper's complete dataset (Dinmohammadi et al.).
-// Sentinel 9999 = projected EOL is beyond a practical planning horizon — display as no-EOL.
+// Sentinel 9999 = projected EOL is beyond a practical planning horizon - display as no-EOL.
 const PAPER_RUL = {
   BMP_cell1: 9999,
   BMP_cell2: 9999,
@@ -64,7 +64,7 @@ function buildStressEntry(d) {
       severity: d.overvoltage > 10000 ? 'High' : 'Low',
       count: d.overvoltage,
       message: d.overvoltage > 10000
-        ? `Voltage exceeded 4.20 V in ${d.overvoltage.toLocaleString()} readings — upper limit consistently breached`
+        ? `Voltage exceeded 4.20 V in ${d.overvoltage.toLocaleString()} readings - upper limit consistently breached`
         : `Voltage briefly exceeded 4.20 V in ${d.overvoltage.toLocaleString()} readings`,
     });
   }
@@ -74,7 +74,7 @@ function buildStressEntry(d) {
       severity: d.undervoltage > 10000 ? 'High' : 'Medium',
       count: d.undervoltage,
       message: d.undervoltage > 10000
-        ? `Voltage fell below 2.70 V in ${d.undervoltage.toLocaleString()} readings — deep discharge events`
+        ? `Voltage fell below 2.70 V in ${d.undervoltage.toLocaleString()} readings - deep discharge events`
         : `Voltage dipped below 2.70 V in ${d.undervoltage.toLocaleString()} readings`,
     });
   }
@@ -170,46 +170,74 @@ export const EOL_CAP = parseFloat(
 );
 
 // ── Benchmark RMSE data (verified from Colab) ──────────────────────────────
+// Method: chronological 70/30 train/test split per cell, RMSE on the held-out 30%.
+// CNN-LSTM values are the mean over 5 random seeds (42, 7, 123, 2024, 99).
+// Persistence = naive baseline (holds last training value flat).
 
 export const OXFORD_RMSE = {
   perCell: {
-    BMP_cell1: { Linear: 0.034, Polynomial: 0.103, Exponential: 0.086, RandomForest: 0.142, GPR: 0.131 },
-    BMP_cell2: { Linear: 0.023, Polynomial: 0.075, Exponential: 0.064, RandomForest: 0.125, GPR: 0.099 },
-    BMR_cell1: { Linear: 0.390, Polynomial: 0.133, Exponential: 0.390, RandomForest: 0.852, GPR: 0.426 },
-    BMR_cell2: { Linear: 0.381, Polynomial: 0.279, Exponential: 0.381, RandomForest: 0.892, GPR: 0.161 },
-    SPM_cell1: { Linear: 0.087, Polynomial: 0.118, Exponential: 0.114, RandomForest: 0.137, GPR: 0.182 },
-    SPM_cell2: { Linear: 0.076, Polynomial: 0.121, Exponential: 0.076, RandomForest: 0.134, GPR: 0.183 },
+    BMP_cell1: { 'CNN-LSTM': 0.076, Polynomial: 0.103, Linear: 0.034, Exponential: 0.086, GPR: 0.131, XGBoost: 0.133, RandomForest: 0.142, Persistence: 0.132 },
+    BMP_cell2: { 'CNN-LSTM': 0.038, Polynomial: 0.075, Linear: 0.023, Exponential: 0.064, GPR: 0.099, XGBoost: 0.115, RandomForest: 0.125, Persistence: 0.114 },
+    BMR_cell1: { 'CNN-LSTM': 0.258, Polynomial: 0.133, Linear: 0.390, Exponential: 0.390, GPR: 0.426, XGBoost: 0.748, RandomForest: 0.852, Persistence: 0.747 },
+    BMR_cell2: { 'CNN-LSTM': 0.258, Polynomial: 0.279, Linear: 0.381, Exponential: 0.381, GPR: 0.161, XGBoost: 0.777, RandomForest: 0.892, Persistence: 0.776 },
+    SPM_cell1: { 'CNN-LSTM': 0.054, Polynomial: 0.118, Linear: 0.087, Exponential: 0.114, GPR: 0.182, XGBoost: 0.131, RandomForest: 0.137, Persistence: 0.130 },
+    SPM_cell2: { 'CNN-LSTM': 0.068, Polynomial: 0.121, Linear: 0.076, Exponential: 0.076, GPR: 0.183, XGBoost: 0.128, RandomForest: 0.134, Persistence: 0.126 },
   },
-  mean: { Linear: 0.165, Polynomial: 0.138, Exponential: 0.185, RandomForest: 0.380, GPR: 0.197 },
+  mean: { 'CNN-LSTM': 0.125, Polynomial: 0.138, Linear: 0.165, Exponential: 0.185, GPR: 0.197, XGBoost: 0.339, RandomForest: 0.380, Persistence: 0.337 },
 };
 
 export const NASA_RMSE = {
   perCell: {
-    B0005: { Linear: 0.031, Polynomial: 0.167, Exponential: 0.031, RandomForest: 0.078, GPR: 0.219 },
-    B0006: { Linear: 0.117, Polynomial: 0.027, Exponential: 0.032, RandomForest: 0.112, GPR: 0.395 },
-    B0007: { Linear: 0.042, Polynomial: 0.111, Exponential: 0.042, RandomForest: 0.067, GPR: 0.060 },
-    B0018: { Linear: 0.081, Polynomial: 0.095, Exponential: 0.081, RandomForest: 0.053, GPR: 0.243 },
+    B0005: { 'CNN-LSTM': 0.025, Polynomial: 0.167, Linear: 0.031, Exponential: 0.031, GPR: 0.219, XGBoost: 0.077, RandomForest: 0.078, Persistence: 0.075 },
+    B0006: { 'CNN-LSTM': 0.097, Polynomial: 0.027, Linear: 0.117, Exponential: 0.032, GPR: 0.395, XGBoost: 0.112, RandomForest: 0.112, Persistence: 0.110 },
+    B0007: { 'CNN-LSTM': 0.038, Polynomial: 0.111, Linear: 0.042, Exponential: 0.042, GPR: 0.060, XGBoost: 0.065, RandomForest: 0.067, Persistence: 0.064 },
+    B0018: { 'CNN-LSTM': 0.051, Polynomial: 0.095, Linear: 0.081, Exponential: 0.081, GPR: 0.243, XGBoost: 0.049, RandomForest: 0.053, Persistence: 0.048 },
   },
-  mean: { Linear: 0.068, Polynomial: 0.100, Exponential: 0.047, RandomForest: 0.077, GPR: 0.229 },
+  mean: { 'CNN-LSTM': 0.053, Polynomial: 0.100, Linear: 0.068, Exponential: 0.047, GPR: 0.229, XGBoost: 0.076, RandomForest: 0.077, Persistence: 0.074 },
 };
 
-export const MODELS = ['Linear', 'Polynomial', 'Exponential', 'RandomForest', 'GPR'];
+export const MODELS = ['CNN-LSTM', 'Polynomial', 'Linear', 'Exponential', 'GPR', 'XGBoost', 'RandomForest', 'Persistence'];
+
+// Persistence is a naive baseline, not a candidate model - rendered grey and
+// excluded from #-rank numbering and (on Oxford) winner highlighting.
+export const BASELINE_MODEL = 'Persistence';
+
+export const MODEL_LABELS = {
+  Persistence: 'Persistence (baseline)',
+};
 
 export const MODEL_DESCRIPTIONS = {
-  Linear:       'Assumes steady, constant decline — works well on slow cells, fails on fast-degrading ones',
-  Polynomial:   'Follows curve-shaped trends — best overall on Oxford dataset',
-  Exponential:  'Smooth accelerating decay — best overall on NASA dataset',
-  RandomForest: 'Pattern matching — cannot predict beyond observed range (catastrophic on fast BMR cells)',
-  GPR:          'Probabilistic — flexible but can overfit noise in short datasets',
+  'CNN-LSTM':   'Temporal deep learning - tied best on Oxford, 2nd on NASA; needs enough history (5-seed mean)',
+  Linear:       'Assumes steady, constant decline - works well on slow cells, fails on fast-degrading ones',
+  Polynomial:   'Follows curve-shaped trends - statistically tied for best on Oxford, but only 6th on NASA',
+  Exponential:  'Smooth accelerating decay - best overall on NASA, 4th on Oxford',
+  RandomForest: 'Pattern matching - cannot predict beyond observed range (catastrophic on fast BMR cells)',
+  XGBoost:      'Gradient boosting - same extrapolation failure as Random Forest',
+  GPR:          'Probabilistic - flexible but can overfit noise in short datasets',
+  Persistence:  'Naive baseline - holds last value; beats both tree ensembles on NASA',
 };
 
 export const MODEL_COLORS = {
+  'CNN-LSTM':   '#ec4899',
   Linear:       '#3b82f6',
   Polynomial:   '#8b5cf6',
   Exponential:  '#f59e0b',
   RandomForest: '#ef4444',
+  XGBoost:      '#f97316',
   GPR:          '#10b981',
+  Persistence:  '#6b7280',
 };
+
+// ── Rolling-origin robustness check (NASA only) ────────────────────────────
+// Each model retrained on the first 50/60/70/80% of every NASA cell; entry is
+// the best model at that forecast origin. Exponential is top-2 at every origin.
+
+export const ROLLING_ORIGIN = [
+  { origin: '50%', best: 'Linear' },
+  { origin: '60%', best: 'Exponential' },
+  { origin: '70%', best: 'Exponential' },
+  { origin: '80%', best: 'CNN-LSTM' },
+];
 
 // ── NASA PCoE capacity data ────────────────────────────────────────────────
 // Representative values sampled from the raw NASA dataset at ~10-20 cycle intervals.

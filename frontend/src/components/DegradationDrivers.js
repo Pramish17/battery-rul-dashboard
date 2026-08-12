@@ -44,7 +44,7 @@ function DegradationDrivers({ cells }) {
         Estimated contributions (modelled, not directly measured) of Temperature · C-Rate · Depth of Discharge to total capacity loss
       </div>
       <div style={{ fontSize: 11, color: '#d97706', background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 6, padding: '5px 9px', marginBottom: 14 }}>
-        These are modelled estimates based on observed capacity loss and cycle parameters — not direct measurements.
+        These are modelled estimates based on observed capacity loss and cycle parameters - not direct measurements.
       </div>
 
       <ResponsiveContainer width="100%" height={260}>
